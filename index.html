@@ -31,7 +31,6 @@
       color:var(--text);
     }
 
-    /* ===== Layout 2 cột ===== */
     .container{
       height:100vh;
       display:flex;
@@ -56,7 +55,6 @@
       overflow:hidden;
     }
 
-    /* ===== Header + Logo ===== */
     .brand-bar{
       display:flex;
       align-items:center;
@@ -119,7 +117,6 @@
       color:var(--brand-orange);
     }
 
-    /* ===== Section highlight ===== */
     .section{
       margin:24px 0 34px;
       padding:18px;
@@ -202,7 +199,6 @@
       color:var(--muted);
     }
 
-    /* ===== Media ===== */
     img.test-img{
       width:100%;
       max-width:980px;
@@ -232,7 +228,6 @@
       font-weight:700;
     }
 
-    /* ===== Form ===== */
     .form-title{
       display:flex;
       align-items:center;
@@ -257,7 +252,6 @@
       border:0;
     }
 
-    /* ===== Responsive ===== */
     @media (max-width: 900px){
       .container{ flex-direction:column; height:auto; }
       .left,.right{ width:100%; height:auto; }
@@ -273,247 +267,36 @@
   </style>
 
   <script>
-    /* =========================================================
-       PHẦN DỄ SỬA NHẤT
-       Mỗi lần đổi bài, bạn chủ yếu chỉ sửa phần CONFIG này.
-       ========================================================= */
-
-    const CONFIG = {
-      VERSION: "20260514_06",
-
-      PAGE_TITLE: "Mock Test One",
-      PAGE_SUBTITLE: "English Test Practice · Listening · Reading & Writing · Speaking",
-
-      LOGO: "logo.jpg",
-
-      FORM_EMBED_URL:
-        "https://docs.google.com/forms/d/1TIZmKZdvqEiJbOlPNFFMBG7mVjpB6sE4pg2bLT9VDSw/viewform?embedded=true",
-
-      IMAGE_FOLDER: "JPG1",
-
-      // Nếu ảnh của bạn là .jpg hoặc .JPG hoặc .png, code sẽ tự thử lần lượt.
-      IMAGE_EXTENSIONS: [".jpg", ".JPG", ".jpeg", ".JPEG", ".png", ".PNG"],
-
-      // ===== LISTENING =====
-      // Muốn thêm/bớt ảnh Listening chỉ cần sửa mảng images.
-      // VD thêm L12 thì viết: images: range("L", 10, 12)
-      LISTENING_PARTS: [
-        {  images: range("L", 2)
-          title: "Listening Part 1",
-          note: "Audio: Part1.MP3 · Images: L1–L4",
-          audio: ["AUDIO/Part1.MP3", "AUDIO/Part1.mp3", "AUDIO/part1.MP3", "AUDIO/part1.mp3"],
-          images: range("L", 3, 4)
-        },
-        {
-          title: "Listening Part 2",
-          note: "Audio: Part2.MP3 · Image: L5",
-          audio: ["AUDIO/Part2.MP3", "AUDIO/Part2.mp3", "AUDIO/part2.MP3", "AUDIO/part2.mp3"],
-          images: range("L", 5, 5)
-        },
-        {
-          title: "Listening Part 3",
-          note: "Audio: Part3.MP3 · Images: L6–L7",
-          audio: ["AUDIO/Part3.MP3", "AUDIO/Part3.mp3", "AUDIO/part3.MP3", "AUDIO/part3.mp3"],
-          images: range("L", 6, 7)
-        },
-        {
-          title: "Listening Part 4",
-          note: "Audio: Part4.MP3 · Images: L8–L9",
-          audio: ["AUDIO/Part4.MP3", "AUDIO/Part4.mp3", "AUDIO/part4.MP3", "AUDIO/part4.mp3"],
-          images: range("L", 8, 9)
-        },
-        {
-          title: "Listening Part 5",
-          note: "Audio: Part5.MP3 · Images: L10–L11",
-          audio: ["AUDIO/Part5.MP3", "AUDIO/Part5.mp3", "AUDIO/part5.MP3", "AUDIO/part5.mp3"],
-          images: range("L", 10, 11)
-        }
-      ],
-
-      // ===== READING & WRITING =====
-      // Nếu bạn có 20 ảnh RW1 -> RW20, chỉ cần sửa số 14 thành 20:
-      // READING_WRITING_PART1: range("RW", 1, 20)
-      READING_WRITING_PART1: range("RW", 1, 14),
-      READING_WRITING_PART2: range("RW", 15, 16),
-
-      // ===== SPEAKING =====
-      SPEAKING: range("S", 1, 6)
-    };
-
-    /* =========================================================
-       HÀM TẠO DANH SÁCH ẢNH TỰ ĐỘNG
-       range("RW", 1, 20) sẽ tạo:
-       RW1, RW2, RW3 ... RW20
-       ========================================================= */
-
-    function range(prefix, start, end){
-      const list = [];
-      for(let i = start; i <= end; i++){
-        list.push(prefix + i);
-      }
-      return list;
-    }
+    /*
+      Chỉ cần đổi VERSION mỗi lần upload ảnh/audio mới:
+      20260514_08 -> 20260514_09 -> 20260514_10
+    */
+    const VERSION = "20260514_08";
 
     function withVersion(path){
-      return path + "?v=" + CONFIG.VERSION;
+      return path + "?v=" + VERSION;
     }
 
-    function imageBase(fileName){
-      // Nếu đã có folder, dùng nguyên; nếu chưa có folder, tự thêm JPG1/
-      if(fileName.includes("/")) return fileName;
-      return CONFIG.IMAGE_FOLDER + "/" + fileName;
-    }
-
-    function createEl(tag, className, text){
-      const el = document.createElement(tag);
-      if(className) el.className = className;
-      if(text) el.textContent = text;
-      return el;
-    }
-
-    /*
-      Load ảnh thông minh:
-      - Bạn chỉ cần ghi RW1, RW2, S1...
-      - Code tự thử .jpg, .JPG, .jpeg, .JPEG, .png, .PNG
-      - Với RW thử thêm cả kiểu có dấu cách: RW 13, RW 14...
-    */
-    function loadSmartImage(img){
-      const base = img.getAttribute("data-img");
-
-      let bases = [base];
-
-      // Nếu là ảnh RW, thử thêm dạng "RW 13" để phòng khi tên file có dấu cách
-      const rwMatch = base.match(/^(.*\/RW)(\d+)$/i);
-      if(rwMatch){
-        bases.push(rwMatch[1] + " " + rwMatch[2]);
-      }
-
-      const candidates = [];
-
-      bases.forEach(b => {
-        CONFIG.IMAGE_EXTENSIONS.forEach(ext => candidates.push(b + ext));
+    window.addEventListener("DOMContentLoaded", () => {
+      // Load logo + ảnh
+      document.querySelectorAll("img[data-src]").forEach(img => {
+        img.src = withVersion(img.getAttribute("data-src"));
       });
-
-      let index = 0;
-
-      function tryNext(){
-        if(index >= candidates.length){
-          const warn = document.createElement("div");
-          warn.className = "missing";
-          warn.textContent =
-            "Không tìm thấy ảnh: " + base +
-            " (.jpg/.JPG/.png). Kiểm tra lại tên file trên GitHub.";
-          img.replaceWith(warn);
-          return;
-        }
-
-        const test = new Image();
-        test.onload = () => {
-          img.src = withVersion(candidates[index]);
-        };
-        test.onerror = () => {
-          index++;
-          tryNext();
-        };
-        test.src = withVersion(candidates[index]);
-      }
-
-      tryNext();
-    }
-
-    /*
-      Audio: thử nhiều tên phổ biến để tránh lỗi chữ hoa/thường
-    */
-    function setupAudio(audio){
-      const sources = JSON.parse(audio.getAttribute("data-audio"));
-      let index = 0;
-
-      function tryAudio(){
-        if(index >= sources.length){
-          const warn = document.createElement("div");
-          warn.className = "missing";
-          warn.textContent = "Không tìm thấy audio. Hãy kiểm tra tên file trong folder AUDIO.";
-          audio.replaceWith(warn);
-          return;
-        }
-
-        audio.src = withVersion(sources[index]);
-        audio.load();
-      }
-
-      audio.addEventListener("error", () => {
-        index++;
-        tryAudio();
-      });
-
-      tryAudio();
-    }
-
-    function renderImages(container, imageList){
-      imageList.forEach(fileName => {
-        const img = document.createElement("img");
-        img.className = "test-img";
-        img.setAttribute("data-img", imageBase(fileName));
-        img.alt = fileName;
-        container.appendChild(img);
-      });
-    }
-
-    function renderListening(){
-      const wrapper = document.getElementById("listening-parts");
-
-      CONFIG.LISTENING_PARTS.forEach(part => {
-        const card = createEl("div", "part-card");
-
-        card.appendChild(createEl("h3", "", part.title));
-        card.appendChild(createEl("p", "note", part.note));
-
-        const audio = document.createElement("audio");
-        audio.controls = true;
-        audio.preload = "metadata";
-        audio.setAttribute("data-audio", JSON.stringify(part.audio));
-        audio.textContent = "Trình duyệt của bạn không hỗ trợ audio.";
-        card.appendChild(audio);
-
-        renderImages(card, part.images);
-
-        wrapper.appendChild(card);
-      });
-    }
-
-    function renderAll(){
-      document.title = CONFIG.PAGE_TITLE;
-
-      const h1 = document.getElementById("page-title");
-      const subtitle = document.getElementById("page-subtitle");
-      const logo = document.querySelector(".logo");
-      const iframe = document.getElementById("answer-form");
-
-      if(h1) h1.textContent = CONFIG.PAGE_TITLE;
-      if(subtitle) subtitle.textContent = CONFIG.PAGE_SUBTITLE;
-      if(logo) logo.src = withVersion(CONFIG.LOGO);
-      if(iframe) iframe.src = CONFIG.FORM_EMBED_URL;
-
-      renderListening();
-      renderImages(document.getElementById("rw-images-part1"), CONFIG.READING_WRITING_PART1);
-      renderImages(document.getElementById("rw-images-part2"), CONFIG.READING_WRITING_PART2);
-      renderImages(document.getElementById("speaking-images"), CONFIG.SPEAKING);
-
-      // Load ảnh
-      document.querySelectorAll("img[data-img]").forEach(loadSmartImage);
 
       // Load audio
-      document.querySelectorAll("audio[data-audio]").forEach(setupAudio);
+      document.querySelectorAll("source[data-src]").forEach(source => {
+        source.src = withVersion(source.getAttribute("data-src"));
+        const audio = source.closest("audio");
+        if(audio) audio.load();
+      });
 
       // Cập nhật ?v= trên thanh địa chỉ để tránh cache HTML
       const url = new URL(window.location.href);
-      if (url.searchParams.get("v") !== CONFIG.VERSION) {
-        url.searchParams.set("v", CONFIG.VERSION);
+      if (url.searchParams.get("v") !== VERSION) {
+        url.searchParams.set("v", VERSION);
         history.replaceState(null, "", url.toString());
       }
-    }
-
-    window.addEventListener("DOMContentLoaded", renderAll);
+    });
   </script>
 </head>
 
@@ -522,10 +305,10 @@
     <!-- BÊN TRÁI: CÂU HỎI -->
     <main class="left">
       <header class="brand-bar">
-        <img class="logo" alt="SIMPace Logo" />
+        <img class="logo" data-src="logo.jpg" alt="SIMPace Logo" />
         <div class="title-block">
-          <h1 id="page-title">Mock Test One</h1>
-          <p id="page-subtitle">English Test Practice · Listening · Reading & Writing · Speaking</p>
+          <h1>Mock Test One</h1>
+          <p>English Test Practice · Listening · Reading & Writing · Speaking</p>
         </div>
       </header>
 
@@ -536,56 +319,137 @@
         <a href="#speaking">🗣️ Speaking</a>
       </nav>
 
-      <!-- SECTION 1: LISTENING -->
+      <!-- =====================================================
+           LISTENING
+           Muốn thêm/bớt ảnh: thêm/xóa dòng <img data-src="...">
+           Lưu ý: L2 đang bị duplicate với L3 nên đã bỏ dòng L2.
+           ===================================================== -->
       <section id="listening" class="section">
         <div class="section-heading">
           <div class="main">🎧 Listening</div>
-          <div class="sub">5 parts · Images L1–L11</div>
+          <div class="sub">5 parts · Edit images manually</div>
         </div>
 
-        <!-- Listening parts sẽ được tự động tạo từ CONFIG.LISTENING_PARTS -->
-        <div id="listening-parts"></div>
+        <!-- LISTENING PART 1 -->
+        <div class="part-card">
+          <!-- L1 là title nên đặt trên cùng của Listening Part 1 -->
+          <img class="test-img" data-src="JPG1/L1.jpg" alt="L1 title" />
+
+          <h3>Listening Part 1</h3>
+          <p class="note">Audio: Part1.MP3</p>
+          <audio controls preload="metadata">
+            <source data-src="AUDIO/Part1.MP3" type="audio/mpeg" />
+            Trình duyệt của bạn không hỗ trợ audio.
+          </audio>
+
+          <!-- L2 bị trùng L3 nên không hiển thị -->
+          <!-- <img class="test-img" data-src="JPG1/L2.jpg" alt="L2" /> -->
+
+          <img class="test-img" data-src="JPG1/L3.jpg" alt="L3" />
+          <img class="test-img" data-src="JPG1/L4.jpg" alt="L4" />
+        </div>
+
+        <!-- LISTENING PART 2 -->
+        <div class="part-card">
+          <h3>Listening Part 2</h3>
+          <p class="note">Audio: Part2.MP3</p>
+          <audio controls preload="metadata">
+            <source data-src="AUDIO/Part2.MP3" type="audio/mpeg" />
+            Trình duyệt của bạn không hỗ trợ audio.
+          </audio>
+          <img class="test-img" data-src="JPG1/L5.jpg" alt="L5" />
+        </div>
+
+        <!-- LISTENING PART 3 -->
+        <div class="part-card">
+          <h3>Listening Part 3</h3>
+          <p class="note">Audio: Part3.MP3</p>
+          <audio controls preload="metadata">
+            <source data-src="AUDIO/Part3.MP3" type="audio/mpeg" />
+            Trình duyệt của bạn không hỗ trợ audio.
+          </audio>
+          <img class="test-img" data-src="JPG1/L6.jpg" alt="L6" />
+          <img class="test-img" data-src="JPG1/L7.jpg" alt="L7" />
+        </div>
+
+        <!-- LISTENING PART 4 -->
+        <div class="part-card">
+          <h3>Listening Part 4</h3>
+          <p class="note">Audio: Part4.MP3</p>
+          <audio controls preload="metadata">
+            <source data-src="AUDIO/Part4.MP3" type="audio/mpeg" />
+            Trình duyệt của bạn không hỗ trợ audio.
+          </audio>
+          <img class="test-img" data-src="JPG1/L8.jpg" alt="L8" />
+          <img class="test-img" data-src="JPG1/L9.jpg" alt="L9" />
+        </div>
+
+        <!-- LISTENING PART 5 -->
+        <div class="part-card">
+          <h3>Listening Part 5</h3>
+          <p class="note">Audio: Part5.MP3</p>
+          <audio controls preload="metadata">
+            <source data-src="AUDIO/Part5.MP3" type="audio/mpeg" />
+            Trình duyệt của bạn không hỗ trợ audio.
+          </audio>
+          <img class="test-img" data-src="JPG1/L10.jpg" alt="L10" />
+          <img class="test-img" data-src="JPG1/L11.jpg" alt="L11" />
+        </div>
       </section>
 
       <div class="section-divider">Reading & Writing · Part 1</div>
 
-      <!-- SECTION 2-1: READING AND WRITING PART 1 -->
+      <!-- =====================================================
+           READING & WRITING PART 1
+           Muốn thêm ảnh RW17, RW18... chỉ cần copy thêm dòng <img>
+           ===================================================== -->
       <section id="reading-writing-part1" class="section">
         <div class="section-heading">
           <div class="main">📖 Reading & Writing</div>
-          <div class="sub">Part 1 · Images RW1–RW14</div>
+          <div class="sub">Part 1 · RW1–RW14</div>
         </div>
 
         <div class="part-card">
           <h3>Reading and Writing Part 1</h3>
-          <p class="note">
-            Sửa số lượng ảnh tại dòng:
-            <strong>READING_WRITING_PART1: range("RW", 1, 14)</strong>.
-          </p>
-          <div id="rw-images-part1"></div>
+
+          <img class="test-img" data-src="JPG1/RW1.jpg" alt="RW1" />
+          <img class="test-img" data-src="JPG1/RW2.jpg" alt="RW2" />
+          <img class="test-img" data-src="JPG1/RW3.jpg" alt="RW3" />
+          <img class="test-img" data-src="JPG1/RW4.jpg" alt="RW4" />
+          <img class="test-img" data-src="JPG1/RW5.jpg" alt="RW5" />
+          <img class="test-img" data-src="JPG1/RW6.jpg" alt="RW6" />
+          <img class="test-img" data-src="JPG1/RW7.jpg" alt="RW7" />
+          <img class="test-img" data-src="JPG1/RW8.jpg" alt="RW8" />
+          <img class="test-img" data-src="JPG1/RW9.jpg" alt="RW9" />
+          <img class="test-img" data-src="JPG1/RW10.jpg" alt="RW10" />
+          <img class="test-img" data-src="JPG1/RW11.jpg" alt="RW11" />
+          <img class="test-img" data-src="JPG1/RW12.jpg" alt="RW12" />
+          <img class="test-img" data-src="JPG1/RW13.jpg" alt="RW13" />
+          <img class="test-img" data-src="JPG1/RW14.jpg" alt="RW14" />
         </div>
       </section>
 
       <div class="section-divider">Reading & Writing · Part 2</div>
 
-      <!-- SECTION 2-2: READING AND WRITING PART 2 -->
+      <!-- READING & WRITING PART 2 -->
       <section id="reading-writing-part2" class="section">
         <div class="section-heading">
           <div class="main">✍️ Reading & Writing</div>
-          <div class="sub">Part 2 · Images RW15–RW16</div>
+          <div class="sub">Part 2 · RW15–RW16</div>
         </div>
 
         <div class="part-card">
           <h3>Reading and Writing Part 2</h3>
-          <p class="note">
-            Sửa số lượng ảnh tại dòng:
-            <strong>READING_WRITING_PART2: range("RW", 15, 16)</strong>.
-          </p>
-          <div id="rw-images-part2"></div>
+
+          <img class="test-img" data-src="JPG1/RW15.jpg" alt="RW15" />
+          <img class="test-img" data-src="JPG1/RW16.jpg" alt="RW16" />
         </div>
       </section>
 
-      <!-- SECTION 3: SPEAKING -->
+      <!-- =====================================================
+           SPEAKING
+           Thêm/bớt ảnh bằng cách thêm/xóa dòng <img>
+           ===================================================== -->
       <section id="speaking" class="section">
         <div class="section-heading">
           <div class="main">🗣️ Speaking</div>
@@ -594,11 +458,13 @@
 
         <div class="part-card">
           <h3>Speaking Questions</h3>
-          <p class="note">
-            Sửa số lượng ảnh tại dòng:
-            <strong>SPEAKING: range("S", 1, 6)</strong>.
-          </p>
-          <div id="speaking-images"></div>
+
+          <img class="test-img" data-src="JPG1/S1.jpg" alt="S1" />
+          <img class="test-img" data-src="JPG1/S2.jpg" alt="S2" />
+          <img class="test-img" data-src="JPG1/S3.jpg" alt="S3" />
+          <img class="test-img" data-src="JPG1/S4.jpg" alt="S4" />
+          <img class="test-img" data-src="JPG1/S5.jpg" alt="S5" />
+          <img class="test-img" data-src="JPG1/S6.jpg" alt="S6" />
         </div>
       </section>
     </main>
@@ -608,7 +474,7 @@
       <div class="form-title">✅ Trả lời</div>
       <div class="iframe-wrap">
         <iframe
-          id="answer-form"
+          src="https://docs.google.com/forms/d/1TIZmKZdvqEiJbOlPNFFMBG7mVjpB6sE4pg2bLT9VDSw/viewform?embedded=true"
           allowfullscreen
           loading="lazy">
         </iframe>
