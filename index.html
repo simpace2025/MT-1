@@ -4,57 +4,74 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
 
-  <!-- Giảm cache (không đảm bảo 100% trên mọi CDN, nhưng giúp rất nhiều) -->
+  <!-- Giảm cache khi cập nhật ảnh/audio trên GitHub Pages -->
   <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
   <meta http-equiv="Pragma" content="no-cache" />
   <meta http-equiv="Expires" content="0" />
 
-  <title>EXAM PRACTICE 1</title>
+  <title>Mock Test One</title>
 
   <style>
-    * { box-sizing: border-box; }
-    body { margin: 0; font-family: Arial, sans-serif; background: #f2f2f2; }
+    * {
+      box-sizing: border-box;
+    }
 
-    /* ===== Layout 2 cột ===== */
-    .container{
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #f2f2f2;
+      color: #111;
+    }
+
+    /* ===== 2 CỬA SỔ ĐỘC LẬP ===== */
+    .container {
       height: 100vh;
       display: flex;
       background: #fff;
     }
-    .left{
+
+    /* Cửa sổ bên trái: đề thi, ảnh, audio */
+    .left {
       width: 66.66%;
+      height: 100vh;
       overflow-y: auto;
-      padding: 26px 26px;
+      padding: 26px;
       background: #f9f9f9;
       border-right: 2px solid #d9d9d9;
     }
-    .right{
-      width: 33.33%;
+
+    /* Cửa sổ bên phải: Google Form */
+    .right {
+      width: 33.34%;
+      height: 100vh;
+      overflow-y: auto;
       padding: 16px;
       background: #fff;
+    }
+
+    .page-title {
       display: flex;
-      flex-direction: column;
-      gap: 12px;
-      overflow: hidden; /* để iframe tự cuộn */
-    }
-
-    /* ===== Header ===== */
-    .page-title{
-      display:flex;
-      align-items:center;
-      gap:10px;
-      font-size: 28px;
+      align-items: center;
+      gap: 10px;
+      font-size: 30px;
       font-weight: 800;
-      margin: 0 0 18px 0;
+      margin: 0 0 20px 0;
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
     }
 
-    h2{
-      margin: 22px 0 10px;
-      font-size: 20px;
+    .section-title {
+      margin: 28px 0 14px;
+      padding: 12px 14px;
+      background: #eaf4ff;
+      border-left: 6px solid #1976d2;
+      border-radius: 8px;
+      font-size: 22px;
+      font-weight: 800;
+      text-transform: uppercase;
     }
 
-    /* ===== Media ===== */
-    img{
+    img {
       width: 100%;
       max-width: 980px;
       height: auto;
@@ -62,60 +79,72 @@
       margin: 10px 0 16px;
       border-radius: 8px;
       background: #fff;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.08);
     }
 
-    audio{
+    audio {
       width: 100%;
-      max-width: 520px;  /* giống thanh audio trong hình bạn muốn */
+      max-width: 560px;
       display: block;
-      margin: 8px 0 14px;
+      margin: 8px 0 18px;
     }
 
-    /* ===== Form ===== */
-    .form-title{
-      display:flex;
-      align-items:center;
-      gap:10px;
+    .form-title {
+      display: flex;
+      align-items: center;
+      gap: 10px;
       font-size: 22px;
       font-weight: 800;
-      margin: 0;
+      margin: 0 0 12px 0;
     }
-    .iframe-wrap{
-      flex: 1;
+
+    .iframe-wrap {
+      height: calc(100vh - 66px);
       border: 1px solid #e5e5e5;
       border-radius: 12px;
       overflow: hidden;
       background: #fff;
     }
-    iframe{
+
+    iframe {
       width: 100%;
       height: 100%;
       border: 0;
     }
 
-    /* ===== Responsive (điện thoại) ===== */
-    @media (max-width: 900px){
-      .container{ flex-direction: column; height: auto; }
-      .left,.right{ width: 100%; height: auto; }
-      .right{ min-height: 80vh; }
-      .iframe-wrap{ min-height: 80vh; }
-      img, audio{ max-width: 100%; }
+    @media (max-width: 900px) {
+      .container {
+        flex-direction: column;
+        height: auto;
+      }
+
+      .left,
+      .right {
+        width: 100%;
+        height: auto;
+      }
+
+      .iframe-wrap {
+        height: 80vh;
+      }
+
+      img,
+      audio {
+        max-width: 100%;
+      }
     }
   </style>
 
-  <!-- ✅ Cache-busting: chỉ cần đổi VERSION là ảnh/mp3 tự refresh -->
   <script>
-    const VERSION = "20251227_01"; // <- Mỗi lần update file: đổi số này (01 -> 02 -> 03...)
+    // Mỗi lần thay ảnh/audio, đổi VERSION để trình duyệt load bản mới.
+    const VERSION = "20260514_03";
 
     window.addEventListener("DOMContentLoaded", () => {
-      // gắn ?v=VERSION cho ảnh + mp3
       document.querySelectorAll("img[data-src], source[data-src]").forEach(el => {
         const base = el.getAttribute("data-src");
         el.setAttribute("src", base + "?v=" + VERSION);
       });
 
-      // nếu muốn cả trang cũng “đổi link” để tránh cache HTML:
-      // (không bắt buộc, nhưng hữu ích)
       const url = new URL(window.location.href);
       if (url.searchParams.get("v") !== VERSION) {
         url.searchParams.set("v", VERSION);
@@ -127,73 +156,77 @@
 
 <body>
   <div class="container">
+
+    <!-- ================= CỬA SỔ TRÁI: ĐỀ THI ================= -->
     <div class="left">
-      <div class="page-title">📘 EXAM PRACTICE 1</div>
+      <div class="page-title">📘 Mock Test One</div>
 
-   
+      <!-- ================= LISTENING ================= -->
+      <div class="section-title">🎧 Listening</div>
 
-      <h2>🔊 LISTEN 1x</h2>
+      <!-- Sửa tên audio tại đây nếu file audio của bạn có tên khác -->
       <audio controls>
-        <source data-src="AUDIO/Part1.mp3" type="audio/mpeg" />
+        <source data-src="AUDIO/Listening.mp3" type="audio/mpeg" />
         Trình duyệt của bạn không hỗ trợ audio.
       </audio>
-      <img data-src="JPG1/L1.jpg" alt="l1" />
-      <img data-src="JPG1/l1-1.jpg" alt="l1-1" />
 
-      <h2>🔊 LISTEN 2x</h2>
-      <audio controls>
-        <source data-src="AUDIO/Part2.mp3" type="audio/mpeg" />
-        Trình duyệt của bạn không hỗ trợ audio.
-      </audio>
-      <img data-src="JPG1/L2.jpg" alt="l2" />
+      <!-- Sửa từng tên ảnh theo file thật bạn upload trong folder JPG1 -->
+      <img data-src="JPG1/L1.jpg" alt="Listening 1" />
+      <img data-src="JPG1/L2.jpg" alt="Listening 2" />
+      <img data-src="JPG1/L3.jpg" alt="Listening 3" />
+      <img data-src="JPG1/L4.jpg" alt="Listening 4" />
+      <img data-src="JPG1/L5.jpg" alt="Listening 5" />
+      <img data-src="JPG1/L6.jpg" alt="Listening 6" />
+      <img data-src="JPG1/L7.jpg" alt="Listening 7" />
+      <img data-src="JPG1/L8.jpg" alt="Listening 8" />
+      <img data-src="JPG1/L9.jpg" alt="Listening 9" />
+      <img data-src="JPG1/L10.jpg" alt="Listening 10" />
+      <img data-src="JPG1/L11.jpg" alt="Listening 11" />
 
-      <h2>🔊 LISTEN 3x</h2>
-      <audio controls>
-        <source data-src="AUDIO/Part3.mp3" type="audio/mpeg" />
-        Trình duyệt của bạn không hỗ trợ audio.
-      </audio>
-      <img data-src="JPG1/L3.jpg" alt="l3" />
+      <!-- ================= READING AND WRITING ================= -->
+      <div class="section-title">📖 Reading and Writing</div>
 
-      <h2>🔊 LISTEN 4x</h2>
-      <audio controls>
-        <source data-src="AUDIO/Part4.mp3" type="audio/mpeg" />
-        Trình duyệt của bạn không hỗ trợ audio.
-      </audio>
-      <img data-src="JPG1/L4.jpg" alt="l4" />
+      <img data-src="JPG1/RW1.jpg" alt="Reading and Writing 1" />
+      <img data-src="JPG1/RW2.jpg" alt="Reading and Writing 2" />
+      <img data-src="JPG1/RW3.jpg" alt="Reading and Writing 3" />
+      <img data-src="JPG1/RW4.jpg" alt="Reading and Writing 4" />
+      <img data-src="JPG1/RW5.jpg" alt="Reading and Writing 5" />
+      <img data-src="JPG1/RW6.jpg" alt="Reading and Writing 6" />
+      <img data-src="JPG1/RW7.jpg" alt="Reading and Writing 7" />
+      <img data-src="JPG1/RW8.jpg" alt="Reading and Writing 8" />
+      <img data-src="JPG1/RW9.jpg" alt="Reading and Writing 9" />
+      <img data-src="JPG1/RW10.jpg" alt="Reading and Writing 10" />
+      <img data-src="JPG1/RW11.jpg" alt="Reading and Writing 11" />
+      <img data-src="JPG1/RW12.jpg" alt="Reading and Writing 12" />
+      <img data-src="JPG1/RW13.jpg" alt="Reading and Writing 13" />
+      <img data-src="JPG1/RW14.jpg" alt="Reading and Writing 14" />
+      <img data-src="JPG1/RW15.jpg" alt="Reading and Writing 15" />
+      <img data-src="JPG1/RW16.jpg" alt="Reading and Writing 16" />
 
-      <h2>🔊 LISTEN 5x</h2>
-      <audio controls>
-        <source data-src="AUDIO/Part5.mp3" type="audio/mpeg" />
-        Trình duyệt của bạn không hỗ trợ audio.
-      </audio>
-      <img data-src="JPG1/L5.jpg" alt="l5" />
+      <!-- ================= SPEAKING ================= -->
+      <div class="section-title">🗣️ Speaking</div>
 
-      <h2>✍️ WRITING</h2>
-      <img data-src="JPG1/w1.jpg" alt="w1" />
+      <img data-src="JPG1/S1.jpg" alt="Speaking 1" />
+      <img data-src="JPG1/S2.jpg" alt="Speaking 2" />
+      <img data-src="JPG1/S3.jpg" alt="Speaking 3" />
+      <img data-src="JPG1/S4.jpg" alt="Speaking 4" />
+      <img data-src="JPG1/S5.jpg" alt="Speaking 5" />
+      <img data-src="JPG1/S6.jpg" alt="Speaking 6" />
     </div>
 
+    <!-- ================= CỬA SỔ PHẢI: GOOGLE FORM ================= -->
     <div class="right">
       <div class="form-title">✅ Trả lời</div>
+
       <div class="iframe-wrap">
         <iframe
-         src="https://docs.google.com/forms/d/e/1FAIpQLSfnMjBC0SSAq3OpEc0TUwMM0hXZDACkd-g_ctldgpQmeHv7Ow/viewform?embedded=true"
+          src="https://docs.google.com/forms/d/e/1FAIpQLSfnMjBC0SSAq3OpEc0TUwMM0hXZDACkd-g_ctldgpQmeHv7Ow/viewform?embedded=true"
           allowfullscreen
           loading="lazy">
         </iframe>
       </div>
     </div>
+
   </div>
 </body>
 </html>
-
-
-
-
-
-
-
-
-
-
-
-
