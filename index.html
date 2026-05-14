@@ -18,9 +18,6 @@
       --brand-orange:#f05a28;
       --brand-dark:#231f20;
       --brand-green:#19a974;
-      --soft-orange:#fff3ec;
-      --soft-blue:#eef7ff;
-      --soft-green:#eefaf4;
       --border:#e3e6ea;
       --text:#1f2933;
       --muted:#667085;
@@ -34,6 +31,7 @@
       color:var(--text);
     }
 
+    /* ===== Layout 2 cột ===== */
     .container{
       height:100vh;
       display:flex;
@@ -58,6 +56,7 @@
       overflow:hidden;
     }
 
+    /* ===== Header + Logo ===== */
     .brand-bar{
       display:flex;
       align-items:center;
@@ -115,8 +114,12 @@
       border:1px solid var(--border);
     }
 
-    .quick-nav a:hover{ border-color:var(--brand-orange); color:var(--brand-orange); }
+    .quick-nav a:hover{
+      border-color:var(--brand-orange);
+      color:var(--brand-orange);
+    }
 
+    /* ===== Section highlight ===== */
     .section{
       margin:24px 0 34px;
       padding:18px;
@@ -156,7 +159,6 @@
       background:linear-gradient(135deg, #f05a28, #ff9f43);
     }
 
-    #reading-writing .section-heading,
     #reading-writing-part1 .section-heading,
     #reading-writing-part2 .section-heading{
       background:linear-gradient(135deg, #0077c8, #00a3ff);
@@ -164,6 +166,20 @@
 
     #speaking .section-heading{
       background:linear-gradient(135deg, #10a36f, #49cc90);
+    }
+
+    .section-divider{
+      margin:28px 0;
+      padding:16px 18px;
+      border-radius:16px;
+      background:linear-gradient(135deg, #101828, #344054);
+      color:#fff;
+      font-size:20px;
+      font-weight:900;
+      text-align:center;
+      letter-spacing:.5px;
+      text-transform:uppercase;
+      box-shadow:0 8px 22px rgba(16,24,40,.12);
     }
 
     .part-card{
@@ -186,6 +202,7 @@
       color:var(--muted);
     }
 
+    /* ===== Media ===== */
     img.test-img{
       width:100%;
       max-width:980px;
@@ -215,6 +232,7 @@
       font-weight:700;
     }
 
+    /* ===== Form ===== */
     .form-title{
       display:flex;
       align-items:center;
@@ -239,6 +257,7 @@
       border:0;
     }
 
+    /* ===== Responsive ===== */
     @media (max-width: 900px){
       .container{ flex-direction:column; height:auto; }
       .left,.right{ width:100%; height:auto; }
@@ -256,25 +275,36 @@
   <script>
     /*
       Mỗi lần upload ảnh/audio mới lên GitHub, đổi VERSION:
-      Ví dụ: 20260514_01 -> 20260514_02 -> 20260514_03
+      Ví dụ: 20260514_04 -> 20260514_05 -> 20260514_06
     */
-    const VERSION = "20260514_03";
+    const VERSION = "20260514_04";
 
     function withVersion(path){
       return path + "?v=" + VERSION;
     }
 
-    // Tự thử nhiều đuôi ảnh: .jpg, .JPG, .png, .PNG
+    /*
+      Load ảnh thông minh:
+      - Thử .jpg, .JPG, .jpeg, .JPEG, .png, .PNG
+      - Với RW thử thêm cả kiểu có dấu cách: RW 13, RW 14...
+    */
     function loadSmartImage(img){
       const base = img.getAttribute("data-img");
-      const candidates = [
-        base + ".jpg",
-        base + ".JPG",
-        base + ".jpeg",
-        base + ".JPEG",
-        base + ".png",
-        base + ".PNG"
-      ];
+
+      let bases = [base];
+
+      // Nếu là ảnh RW, thử thêm dạng "RW 13" để phòng khi tên file có dấu cách
+      const rwMatch = base.match(/^(.*\/RW)(\d+)$/i);
+      if(rwMatch){
+        bases.push(rwMatch[1] + " " + rwMatch[2]);
+      }
+
+      const exts = [".jpg", ".JPG", ".jpeg", ".JPEG", ".png", ".PNG"];
+      const candidates = [];
+
+      bases.forEach(b => {
+        exts.forEach(ext => candidates.push(b + ext));
+      });
 
       let index = 0;
 
@@ -301,7 +331,9 @@
       tryNext();
     }
 
-    // Audio: thử nhiều đường dẫn phổ biến để tránh lỗi chữ hoa/thường
+    /*
+      Audio: thử nhiều tên phổ biến để tránh lỗi chữ hoa/thường
+    */
     function setupAudio(audio){
       const sources = JSON.parse(audio.getAttribute("data-audio"));
       let index = 0;
@@ -310,7 +342,7 @@
         if(index >= sources.length){
           const warn = document.createElement("div");
           warn.className = "missing";
-          warn.textContent = "Không tìm thấy audio. Hãy kiểm tra tên file trong folder AUDIO/Audio.";
+          warn.textContent = "Không tìm thấy audio. Hãy kiểm tra tên file trong folder AUDIO.";
           audio.replaceWith(warn);
           return;
         }
@@ -327,31 +359,38 @@
       tryAudio();
     }
 
-    function addImages(containerId, prefix, start, end){
+    function addImage(containerId, basePath, altText){
       const container = document.getElementById(containerId);
+      const img = document.createElement("img");
+      img.className = "test-img";
+      img.setAttribute("data-img", basePath);
+      img.alt = altText;
+      container.appendChild(img);
+    }
+
+    function addImages(containerId, prefix, start, end){
       for(let i = start; i <= end; i++){
-        const img = document.createElement("img");
-        img.className = "test-img";
-        img.setAttribute("data-img", "JPG1/" + prefix + i);
-        img.alt = prefix + i;
-        container.appendChild(img);
+        addImage(containerId, "JPG1/" + prefix + i, prefix + i);
       }
     }
 
     window.addEventListener("DOMContentLoaded", () => {
-      // Logo nằm cùng thư mục với index.html. Đặt tên file logo là logo.png
+      // Logo nằm cùng thư mục với index.html. File hiện tại trên GitHub của bạn là logo.jpg
       const logo = document.querySelector(".logo");
       if(logo){
         logo.src = withVersion("logo.jpg");
       }
 
-      // Render Reading & Writing: RW1 -> RW16
-      addImages("rw-images", "RW", 1, 16);
+      // Render Reading & Writing Part 1: RW1 -> RW14
+      addImages("rw-images-part1", "RW", 1, 14);
+
+      // Render Reading & Writing Part 2: RW15 -> RW16
+      addImages("rw-images-part2", "RW", 15, 16);
 
       // Render Speaking: S1 -> S6
       addImages("speaking-images", "S", 1, 6);
 
-      // Load ảnh thông minh
+      // Load ảnh
       document.querySelectorAll("img[data-img]").forEach(loadSmartImage);
 
       // Load audio
@@ -381,7 +420,8 @@
 
       <nav class="quick-nav">
         <a href="#listening">🎧 Listening</a>
-        <a href="#reading-writing">📖 Reading & Writing</a>
+        <a href="#reading-writing-part1">📖 RW Part 1</a>
+        <a href="#reading-writing-part2">✍️ RW Part 2</a>
         <a href="#speaking">🗣️ Speaking</a>
       </nav>
 
@@ -392,80 +432,97 @@
           <div class="sub">5 parts · Images L1–L11</div>
         </div>
 
+        <!-- LISTENING PART 1 -->
         <div class="part-card">
-	<img class="test-img" data-img="JPG1/L1" alt="L1" />
           <h3>Listening Part 1</h3>
-          <p class="note">Audio: Part1.MP3 · Images: L1–L2</p>
+          <p class="note">Audio: Part1.MP3 · Images: L1–L4</p>
           <audio controls preload="metadata"
-            data-audio='["AUDIO/Part1.MP3","Audio/Part1.MP3","AUDIO/part1.MP3","Audio/part1.MP3","AUDIO/L1.MP3","Audio/L1.MP3"]'>
+            data-audio='["AUDIO/Part1.MP3","AUDIO/Part1.mp3","AUDIO/part1.MP3","AUDIO/part1.mp3","AUDIO/L1.MP3","AUDIO/L1.mp3"]'>
             Trình duyệt của bạn không hỗ trợ audio.
           </audio>
-	
-	<img class="test-img" data-img="JPG1/L3" alt="L3" /><img class="test-img" data-img="JPG1/L4" alt="L4" />
-          
-        
+          <img class="test-img" data-img="JPG1/L1" alt="L1" />
+          <img class="test-img" data-img="JPG1/L2" alt="L2" />
+          <img class="test-img" data-img="JPG1/L3" alt="L3" />
+          <img class="test-img" data-img="JPG1/L4" alt="L4" />
         </div>
 
+        <!-- LISTENING PART 2 -->
         <div class="part-card">
           <h3>Listening Part 2</h3>
-          <p class="note">Audio: Part2.MP3 · Images: L3–L4</p>
+          <p class="note">Audio: Part2.MP3 · Image: L5</p>
           <audio controls preload="metadata"
-            data-audio='["AUDIO/Part2.MP3","Audio/Part2.MP3","AUDIO/part2.MP3","Audio/part2.MP3","AUDIO/L2.MP3","Audio/L2.MP3"]'>
+            data-audio='["AUDIO/Part2.MP3","AUDIO/Part2.mp3","AUDIO/part2.MP3","AUDIO/part2.mp3","AUDIO/L2.MP3","AUDIO/L2.mp3"]'>
             Trình duyệt của bạn không hỗ trợ audio.
           </audio>
-	<img class="test-img" data-img="JPG1/L5" alt="L5" />
-          
-          
+          <img class="test-img" data-img="JPG1/L5" alt="L5" />
         </div>
 
+        <!-- LISTENING PART 3 -->
         <div class="part-card">
           <h3>Listening Part 3</h3>
-          <p class="note">Audio: Part3.MP3 · Images: L5–L6</p>
+          <p class="note">Audio: Part3.MP3 · Images: L6–L7</p>
           <audio controls preload="metadata"
-            data-audio='["AUDIO/Part3.MP3","Audio/Part3.MP3","AUDIO/part3.MP3","Audio/part3.MP3","AUDIO/L3.MP3","Audio/L3.MP3"]'>
+            data-audio='["AUDIO/Part3.MP3","AUDIO/Part3.mp3","AUDIO/part3.MP3","AUDIO/part3.mp3","AUDIO/L3.MP3","AUDIO/L3.mp3"]'>
             Trình duyệt của bạn không hỗ trợ audio.
           </audio>
-          
           <img class="test-img" data-img="JPG1/L6" alt="L6" />
-	<img class="test-img" data-img="JPG1/L7" alt="L7" />	
+          <img class="test-img" data-img="JPG1/L7" alt="L7" />
         </div>
 
+        <!-- LISTENING PART 4 -->
         <div class="part-card">
           <h3>Listening Part 4</h3>
-          <p class="note">Audio: Part4.MP3 · Images: L7–L8</p>
+          <p class="note">Audio: Part4.MP3 · Images: L8–L9</p>
           <audio controls preload="metadata"
-            data-audio='["AUDIO/Part4.MP3","Audio/Part4.MP3","AUDIO/part4.MP3","Audio/part4.MP3","AUDIO/L4.MP3","Audio/L4.MP3"]'>
+            data-audio='["AUDIO/Part4.MP3","AUDIO/Part4.mp3","AUDIO/part4.MP3","AUDIO/part4.mp3","AUDIO/L4.MP3","AUDIO/L4.mp3"]'>
             Trình duyệt của bạn không hỗ trợ audio.
           </audio>
-          
           <img class="test-img" data-img="JPG1/L8" alt="L8" />
-	  <img class="test-img" data-img="JPG1/L9" alt="L9" />
+          <img class="test-img" data-img="JPG1/L9" alt="L9" />
         </div>
 
+        <!-- LISTENING PART 5 -->
         <div class="part-card">
           <h3>Listening Part 5</h3>
-          <p class="note">Audio: Part5.MP3 · Images: L9–L11</p>
+          <p class="note">Audio: Part5.MP3 · Images: L10–L11</p>
           <audio controls preload="metadata"
-            data-audio='["AUDIO/Part5.MP3","Audio/Part5.MP3","AUDIO/part5.MP3","Audio/part5.MP3","AUDIO/L5.MP3","Audio/L5.MP3"]'>
+            data-audio='["AUDIO/Part5.MP3","AUDIO/Part5.mp3","AUDIO/part5.MP3","AUDIO/part5.mp3","AUDIO/L5.MP3","AUDIO/L5.mp3"]'>
             Trình duyệt của bạn không hỗ trợ audio.
           </audio>
-          
           <img class="test-img" data-img="JPG1/L10" alt="L10" />
           <img class="test-img" data-img="JPG1/L11" alt="L11" />
         </div>
       </section>
 
-      <!-- SECTION 2: READING AND WRITING -->
-      <section id="reading-writing" class="section">
+      <div class="section-divider">Reading & Writing · Part 1</div>
+
+      <!-- SECTION 2-1: READING AND WRITING PART 1 -->
+      <section id="reading-writing-part1" class="section">
         <div class="section-heading">
           <div class="main">📖 Reading & Writing</div>
-          <div class="sub">Images RW1–RW16</div>
+          <div class="sub">Part 1 · Images RW1–RW14</div>
         </div>
 
         <div class="part-card">
-          <h3>Reading and Writing Questions</h3>
-          <p class="note">Upload ảnh vào folder <strong>JPG1</strong> và đặt tên: RW1.jpg, RW2.jpg ... RW16.jpg.</p>
-          <div id="rw-images"></div>
+          <h3>Reading and Writing Part 1</h3>
+          <p class="note">Upload ảnh vào folder <strong>JPG1</strong> và đặt tên: RW1.jpg, RW2.jpg ... RW14.jpg.</p>
+          <div id="rw-images-part1"></div>
+        </div>
+      </section>
+
+      <div class="section-divider">Reading & Writing · Part 2</div>
+
+      <!-- SECTION 2-2: READING AND WRITING PART 2 -->
+      <section id="reading-writing-part2" class="section">
+        <div class="section-heading">
+          <div class="main">✍️ Reading & Writing</div>
+          <div class="sub">Part 2 · Images RW15–RW16</div>
+        </div>
+
+        <div class="part-card">
+          <h3>Reading and Writing Part 2</h3>
+          <p class="note">Upload ảnh vào folder <strong>JPG1</strong> và đặt tên: RW15.jpg, RW16.jpg.</p>
+          <div id="rw-images-part2"></div>
         </div>
       </section>
 
