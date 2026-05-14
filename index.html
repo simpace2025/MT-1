@@ -156,7 +156,9 @@
       background:linear-gradient(135deg, #f05a28, #ff9f43);
     }
 
-    #reading-writing .section-heading{
+    #reading-writing .section-heading,
+    #reading-writing-part1 .section-heading,
+    #reading-writing-part2 .section-heading{
       background:linear-gradient(135deg, #0077c8, #00a3ff);
     }
 
@@ -176,20 +178,6 @@
       margin:0 0 10px;
       font-size:19px;
       color:#101828;
-    }
-
-    .section-divider{
-      margin:28px 0;
-      padding:16px 18px;
-      border-radius:16px;
-      background:linear-gradient(135deg, #101828, #344054);
-      color:#fff;
-      font-size:20px;
-      font-weight:900;
-      text-align:center;
-      letter-spacing:.5px;
-      text-transform:uppercase;
-      box-shadow:0 8px 22px rgba(16,24,40,.12);
     }
 
     .note{
@@ -270,7 +258,7 @@
       Mỗi lần upload ảnh/audio mới lên GitHub, đổi VERSION:
       Ví dụ: 20260514_01 -> 20260514_02 -> 20260514_03
     */
-    const VERSION = "20260514_01";
+    const VERSION = "20260514_03";
 
     function withVersion(path){
       return path + "?v=" + VERSION;
@@ -357,11 +345,8 @@
         logo.src = withVersion("logo.jpg");
       }
 
-      // Render Reading & Writing Part 1: RW1 -> RW14
-      addImages("rw-images-part1", "RW", 1, 14);
-
-      // Render Reading & Writing Part 2: RW15 -> RW16
-      addImages("rw-images-part2", "RW", 15, 16);
+      // Render Reading & Writing: RW1 -> RW16
+      addImages("rw-images", "RW", 1, 16);
 
       // Render Speaking: S1 -> S6
       addImages("speaking-images", "S", 1, 6);
@@ -396,8 +381,7 @@
 
       <nav class="quick-nav">
         <a href="#listening">🎧 Listening</a>
-        <a href="#reading-writing-part1">📖 RW Part 1</a>
-        <a href="#reading-writing-part2">✍️ RW Part 2</a>
+        <a href="#reading-writing">📖 Reading & Writing</a>
         <a href="#speaking">🗣️ Speaking</a>
       </nav>
 
@@ -471,33 +455,17 @@
         </div>
       </section>
 
-      <!-- SECTION 2-1: READING AND WRITING PART 1 -->
-      <section id="reading-writing-part1" class="section">
+      <!-- SECTION 2: READING AND WRITING -->
+      <section id="reading-writing" class="section">
         <div class="section-heading">
           <div class="main">📖 Reading & Writing</div>
-          <div class="sub">Part 1 · Images RW1–RW14</div>
+          <div class="sub">Images RW1–RW16</div>
         </div>
 
         <div class="part-card">
-          <h3>Reading and Writing Part 1</h3>
-          <p class="note">Upload ảnh vào folder <strong>JPG1</strong> và đặt tên: RW1.jpg, RW2.jpg ... RW14.jpg.</p>
-          <div id="rw-images-part1"></div>
-        </div>
-      </section>
-
-      <div class="section-divider">Reading & Writing · Part 2</div>
-
-      <!-- SECTION 2-2: READING AND WRITING PART 2 -->
-      <section id="reading-writing-part2" class="section">
-        <div class="section-heading">
-          <div class="main">✍️ Reading & Writing</div>
-          <div class="sub">Part 2 · Images RW15–RW16</div>
-        </div>
-
-        <div class="part-card">
-          <h3>Reading and Writing Part 2</h3>
-          <p class="note">Upload ảnh vào folder <strong>JPG1</strong> và đặt tên: RW15.jpg, RW16.jpg.</p>
-          <div id="rw-images-part2"></div>
+          <h3>Reading and Writing Questions</h3>
+          <p class="note">Upload ảnh vào folder <strong>JPG1</strong> và đặt tên: RW1.jpg, RW2.jpg ... RW16.jpg.</p>
+          <div id="rw-images"></div>
         </div>
       </section>
 
